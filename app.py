@@ -27,7 +27,7 @@ df_map['iso_data'] = country_codes
 df_map.loc[df_map.country == 'Iran (Islamic Rep of)', 'iso_data'] = 'IRN'
 df_map.loc[df_map.country == 'United States of America', 'iso_data'] = 'USA'
 
-# making df3 which will be used for some Diagrams
+# making df3 which will be used for some Diagarams
 df3 = df_map.groupby(['country', 'iso_data', 'year'], as_index=False)['suicides_no', 'population'].sum()
 df3['proportion'] = df3['suicides_no'] * 1000 / df3['population']
 
@@ -42,15 +42,14 @@ options_list = [{'label': i, 'value': i} for i in df_map['country'].unique()]
 options_list.insert(0, {'label': 'All', 'value': 'All'})
 
 # beginning of the dash
-app = dash.Dash(__name__, supress_callback_exceptions=True)
+app = dash.Dash(__name__)
 server = app.server
 # making the layout
 app.title = 'LSMU Psychology'
 app.layout = html.Div([dcc.Markdown(''' # General statistics of international suicide phenomenon'''),
                        dcc.Markdown('''## map of the world'''),
-                       dcc.Markdown('''In the choropleth map below you can see absolute number of suicide deaths by 
-                       each of the country in our data set. please change the slider to see updated data for desired 
-                       year.'''),
+                       dcc.Markdown('''In the choropleth map below you can see absolute number of suicide deaths by each of the country in our data set.   
+                                    please change the slider to see updated data for desired year.'''),
 
                        dcc.Graph(id="map_with_slider"),
 
@@ -65,9 +64,7 @@ app.layout = html.Div([dcc.Markdown(''' # General statistics of international su
                        ),
                        dcc.Markdown('''## countries in comparison'''),
                        dcc.Markdown(
-                           '''The left diagram shows the absolute count of suicide deaths in each country of the 
-                           dataset and the right diagram shows relative number of suicide deaths in comparison to the 
-                           population of the country.'''),
+                           '''The left diagram shows the absolute count of suicide deaths in each country of the dataset and the right diagram shows relative number of suicide deaths in comparison to the population of the country.'''),
 
                        html.Div([
                            dcc.Graph(id="bar_chart")
@@ -87,11 +84,9 @@ app.layout = html.Div([dcc.Markdown(''' # General statistics of international su
                        dcc.Markdown('''### Disclaimer: '''),
                        dcc.Markdown('''this project has been done by Ahmadreza Ramezanzadeh from group 49.  
  #### Reference: '''),
-                       dcc.Markdown('''[united nations Developlemnt program](
-                       http://hdr.undp.org/en/indicators/137506) 2018 Human Development index [kaggle] (
-                       https://www.kaggle.com/szamil/suicide-in-the-twenty-first-century/notebook) suicide in twenty 
-                       first century [world health organization](
-                       http://www.who.int/mental_health/suicide-prevention/en/) suicide prevention''')
+                       dcc.Markdown('''[united nations Developlemnt program](http://hdr.undp.org/en/indicators/137506) 2018 Human Development index  
+                                    [kaggle] (https://www.kaggle.com/szamil/suicide-in-the-twenty-first-century/notebook) suicide in twenty first century  
+                                    [world health organization](http://www.who.int/mental_health/suicide-prevention/en/) suicide prevention''')
                        ])
 
 
@@ -106,7 +101,7 @@ def update_figure(selected_year):
     bar_df = df_map[df_map.year == selected_year]
     hbar_df = df4[df4.year == selected_year]
 
-    # choropleth map
+    # choroplethe map
     fig = px.choropleth(filtered_df, locations="iso_data",
                         color="suicides_no",
                         hover_name="country",
@@ -120,7 +115,7 @@ def update_figure(selected_year):
     bar_fig = px.bar(bar_df, x='country', y='suicides_no', color='sex',
                      title='Comparison of suicide deaths of each country in {}'.format(selected_year),
                      hover_data=['age'])
-    # Horizontal bar chart
+    # Horizental bar chart
     hbar_fig = px.bar(hbar_df, x=('proportion'), y=('country'), orientation='h',
                       title='Ranking of highest suicide mortality per capita in {}'.format(selected_year))
     return fig, bar_fig, hbar_fig
@@ -137,3 +132,8 @@ def country_trend(selected_country):
                          hover_data=['age'])
 
     return country_fig
+
+
+# server and render
+if __name__ == '__main__':
+    app.run_server(host='0.0.0.0', debug=False)
