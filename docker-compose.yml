@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  lms_dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: LSMU_dashboard
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - type: bind
+        source: .
+        target: /code
+
+networks:
+  app-network:
+    external: true
